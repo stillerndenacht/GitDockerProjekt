@@ -2,17 +2,18 @@
 #Herunterladen kann man das Dockerfile von GitHub - mit folgendem Befehlsblock 
 #(im Block kopieren, Hashtags entfernen, startet wahrscheinlich von selbst, sonst Enter):
 
-#git clone https://github.com/miwilhelm/VeitAysarMicha.git
-#cd VeitAysarMicha/Veit/
+#git clone https://github.com/stillerndenacht/GitDockerProjekt.git
+#cd GitDockerProjekt/docker/
 #docker build -t veits_dockerfile_repo .
-#docker run -it --name veits_repo -p80:80 veits_dockerfile_repo:latest 
+#docker run -d -it --name veits_repo -p80:80 veits_dockerfile_repo:latest 
 
-#1.1. klont das Repository in dem bei Veit eigentlich nur das Dockerfile und
+#1.1. klont das Repository in dem bei docker eigentlich nur das Dockerfile und
 #     diese Veits_dockerfile_erklärt.txt drin ist.
 #1.2. wechselt in das Verzeichnis in dem das Dockerfile drin ist
 #1.3. baut mit den Anweisungen des Dockerfiles das neue Image namens veits_dockerfile_repo
 #1.4. bei diesem Befehl bleibt Docker stehen > Enter drücken
-#     dann startet Docker das Image als Container mit dem Name veits_repo auf Port 80
+#     dann startet Docker das Image als Container als Hintergrund-Demon mit dem Name veits_repo auf Port 80
+#     für mehrmaliges Starten des Containers muss der Name angepasst werden
 
 # jetzt zum Dockerfile selbst:
 # die Grundlage für das Dockerfile bildet ein Ubuntu-Image
@@ -34,11 +35,11 @@ RUN apt-get install -y apache2
 # um die folgenden Dateien von GitHub holen zu können.
 RUN apt-get install -y git
 
-# ob dieser Befehl hier sinnvoll ist ?? jedenfalls soll er Apache starten
-RUN apache2ctl start
+# ob dieser Befehl hier sinnvoll ist ?? jedenfalls soll er Apache starten (ist erstmal auskommentiert)
+#RUN apache2ctl start
 
 # das ist eine Variante um die index_v.html in das image zu bekommen
-# (hab ich dann aber nicht verwendet
+# (hab ich dann aber nicht verwendet)
 #ADD https://github.com/stillerndenacht/GitDockerProjekt/blob/master/index_v.html /var/www/html
 
 # legt ein neues Verzeichnis gitphp in www an (könnte auch anders genannt werden)
@@ -48,41 +49,18 @@ RUN mkdir /var/www/gitphp
 # (dafür war oben die Installation von Git nötig)
 RUN git clone https://github.com/stillerndenacht/GitDockerProjekt.git /var/www/gitphp
 
-# sollte das eben geklonte Repository jedesmal nach Neustart des Containers aktualisieren
-# aber eigentlich unnötig, weil man den Container einfach laufen lassen kann
-# und den git pull im Container ausführen
-#CMD ["cd /var/www/gitphp", "git pull origin master"]
+# soll den Apache starten
+CMD ["apache2ctl", "start"]
 
 # legt das Startverzeichnis des Containers fest (könnte man auch auf /var/www/gitphp ändern)
-WORKDIR /var
+WORKDIR /var/www/gitphp
+
+#soll die Ausführung der index_vcounter4.html starten
+CMD ["php", "index_vcounter4.html"]
 
 # wie oben schon erwähnt läuft der Container noch nicht,
 # wenn der Befehlsblock durchgelaufen und das Image erstellt ist.
 # um den Container zu starten muss man noch einmal Entern
-
-# danach führt man noch folgende Befehle aus (jetzt ist man schon im /var Verzeichnis):
-
-#cd www/gitphp/
-#apache2ctl start
-#php index_v.html > ../html/index.html
-
-#git pull origin master
-#php index_v.html > ../html/index.html
-
-#2.1. wechselt in gitphp
-#2.2. startet Apache (er läuft trotz der jetzt auftauchenden Fehlermeldung)
-#     man kann das im Dockerplayground prüfen indem man oberhalb der Konsole den Port 80 anklickt
-#     es erscheint eine Apache-Seite
-#2.3. führt die index_v.html aus und leitet die Ausgabe dorthin,
-#     wo eben noch die Apache-Seite war (Seite neu laden)
-
-#2.4. sollte man etwas an index_v.html geändert und das nach GitHub gepusht haben,
-#     so muss man es in den Container pullen
-#2.5. und die neue index_v.php wieder umleiten 
-#    (beachte das der Befehl so nur aus var/www/gitphp heraus funktioniert)
-
-#  Die Schritte 2.4. und 2.5. wiederholt man jedesmal, wenn man
-#  Änderungen an index_v.html ausgeben lassen will
 
 # Wahrscheinlich ließen sich die Befehlsblöcke noch zu Kurzbefehlen zusammenschnüren,
 # die man bei der Erzeugung des Images mit erzeugt... 
