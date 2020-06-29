@@ -4,8 +4,8 @@
 
 #git clone https://github.com/stillerndenacht/GitDockerProjekt.git
 #cd GitDockerProjekt/docker/
-#docker build -t veits_dockerfile_repo .
-#docker run -d -it --name veits_repo -p80:80 veits_dockerfile_repo:latest 
+#sudo docker build -t veits_dockerfile_repo .
+#sudo docker run -d -it --name veits_repo -p80:80 veits_dockerfile_repo:latest 
 
 #1.1. klont das Repository in dem bei docker eigentlich nur das Dockerfile und
 #     diese Veits_dockerfile_erklärt.txt drin ist.
